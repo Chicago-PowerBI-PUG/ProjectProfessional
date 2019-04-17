@@ -1,0 +1,71 @@
+//4a Demo
+AllGEO = ALL(GeoDim)
+ALLGeo_Region = ALL(GeoDim[Region])
+ALLGEO_RegionState = ALL(GeoDim[Region],GeoDim[State])
+ALLGEO_Filtered = FILTER(ALL(GeoDim[Region],GeoDim[State]), 
+    GeoDim[Region] = "East")
+ALLGEO_Filtered = FILTER(ALL(GeoDim[Region],GeoDim[State]), 
+    GeoDim[Region] = "East")
+	
+	
+//4b Demo - Add Filter
+Desktop Sales = CALCULATE([Total Sales], CampaignDim[Device] = "Desktop")
+Mobile Sales = CALCULATE([Total Sales], CampaignDim[Device] = "Mobile")
+Tablet Sales = CALCULATE([Total Sales], CampaignDim[Device] = "Tablet")
+
+//4b Demo - Ignore Filter
+Total Sales All Geo = CALCULATE([Total Sales], ALL(GeoDim))
+Total Sales All States = CALCULATE([Total Sales], ALL(GeoDim[State]))
+Total Sales All Selected States = CALCULATE([Total Sales], ALLSELECTED(GeoDim[State]))
+
+//4b Demo - Update Filter
+[2014 Sales] = CALCULATE([Total Sales], DateDim[Year] = 2014)
+2014 Sales FIL = CALCULATE([Total Sales],
+     FILTER(DateDim,
+         DateDim[Year] = 2014))
+
+//4b Demo - Update Filter with % Sales
+% Device Sales = 
+DIVIDE([Total Sales],
+    CALCULATE([Total Sales],
+        ALL(CampaignDim[Device])))
+
+//	4b Demo - Variables 
+% Device Sales withvab = 
+VAR AllDevice = CALCULATE([Total Sales],ALL(CampaignDim[Device]))
+Return
+DIVIDE([Total Sales],AllDevice)
+
+//4c Demo - Summarize 
+SummarizeDemo = Summarize ( Sales, CustomerID, then “FirstPurchaseDate”, MIN(Sales[Date], “DistinctProducts”, distcount(sales[ProductID],”Transactions”, Countrows(Sales))))
+Summarize Demo = 
+SUMMARIZE(Sales,
+    Sales[CustomerID],
+    "FirstPurchaseDate", MIN(Sales[Date]),
+    "Total Transactions", COUNTROWS(Sales),
+    "Dis. Products", DISTINCTCOUNT(Sales[ProductID]),
+    "Units", SUM(Sales[Units]))
+
+//4c Demo - Filter & Selected Value	
+SelectedValueDemo = If(isfiltered(ProductDim[Product]), SelectedValue([Product],”Mul. Select”), “None Selected”)
+Selected Category = IF(ISFILTERED(ProductDim[Category]),
+    SELECTEDVALUE(ProductDim[Category],"Mul. Selected"),"No Category Sel.")
+
+//4c Demo - Info & Logic
+INdemo = Calculate(Total sales , GeoDim[State] IN {“NY”,”FL”})
+% Best State Sales = DIVIDE([Best State Sales],[Total Sales],BLANK())
+
+//4c Demo - Date & Time
+Total Sales MtD = CALCULATE([Total Sales],
+    DATESMTD(DateDim[Date]))
+
+Total Sales MtD UPD = CALCULATE([Total Sales],
+    DATESMTD(Sales[Date]))
+	
+Total Sales PM MtD = CALCULATE([Total Sales MtD UPD],
+    SAMEPERIODLASTYEAR(Sales[Date]))
+	
+Total Sales PM MtD UP = CALCULATE([Total Sales MtD UPD],
+    SAMEPERIODLASTYEAR(DateDim[Date]))
+	
+	
